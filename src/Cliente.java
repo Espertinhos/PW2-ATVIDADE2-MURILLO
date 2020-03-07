@@ -28,65 +28,55 @@ public class Cliente {
 		
 	}
 	
-	public boolean ehCPFValido() {
-		  if (cpf.equals("00000000000") ||
-		            cpf.equals("11111111111") ||
-		            cpf.equals("22222222222") || cpf.equals("33333333333") ||
-		            cpf.equals("44444444444") || cpf.equals("55555555555") ||
-		            cpf.equals("66666666666") || cpf.equals("77777777777") ||
-		            CPF.equals("88888888888") || cpf.equals("99999999999") ||
-		            (cpf.length() != 11))
-		            return(false);
-		          
-		        char dig10, dig11;
-		        int sm, i, r, num, peso;
-		          
-		        // "try" - protege o codigo para eventuais erros de conversao de tipo (int)
-		        try {
-		        // Calculo do 1o. Digito Verificador
-		            sm = 0;
-		            peso = 10;
-		            for (i=0; i<9; i++) {              
-		        // converte o i-esimo caractere do CPF em um numero:
-		        // por exemplo, transforma o caractere '0' no inteiro 0         
-		        // (48 eh a posicao de '0' na tabela ASCII)         
-		            num = (int)(cpf.charAt(i) - 48); 
-		            sm = sm + (num * peso);
-		            peso = peso - 1;
-		            }
-		          
-		            r = 11 - (sm % 11);
-		            if ((r == 10) || (r == 11))
-		                dig10 = '0';
-		            else dig10 = (char)(r + 48); // converte no respectivo caractere numerico
-		          
-		        // Calculo do 2o. Digito Verificador
-		            sm = 0;
-		            peso = 11;
-		            for(i=0; i<10; i++) {
-		            num = (int)(cpf.charAt(i) - 48);
-		            sm = sm + (num * peso);
-		            peso = peso - 1;
-		            }
-		          
-		            r = 11 - (sm % 11);
-		            if ((r == 10) || (r == 11))
-		                 dig11 = '0';
-		            else dig11 = (char)(r + 48);
-		          
-		        // Verifica se os digitos calculados conferem com os digitos informados.
-		            if ((dig10 == cpf.charAt(9)) && (dig11 == cpf.charAt(10)))
-		                 return(true);
-		            else return(false);
-		                } catch (InputMismatchException erro) {
-		                return(false);
-		            }
-		        }
-		          
-		        public static String imprimeCPF(String cpf) {
-		            return(cpf.substring(0, 3) + "." + cpf.substring(3, 6) + "." +
-		            cpf.substring(6, 9) + "-" + cpf.substring(9, 11));
-		        }
+	public boolean ehCPFValido(String strCpf) {
+	      int     d1, d2;
+	      int     digito1, digito2, resto;
+	      int     digitoCPF;
+	      String  nDigResult;
+
+	      d1 = d2 = 0;
+	      digito1 = digito2 = resto = 0;
+
+	      for (int nCount = 1; nCount < strCpf.length() -1; nCount++)
+	      {
+	         digitoCPF = Integer.valueOf (strCpf.substring(nCount -1, nCount)).intValue();
+
+	         //multiplique a ultima casa por 2 a seguinte por 3 a seguinte por 4 e assim por diante.
+	         d1 = d1 + ( 11 - nCount ) * digitoCPF;
+
+	         //para o segundo digito repita o procedimento incluindo o primeiro digito calculado no passo anterior.
+	         d2 = d2 + ( 12 - nCount ) * digitoCPF;
+	      };
+
+	      //Primeiro resto da divisão por 11.
+	      resto = (d1 % 11);
+
+	      //Se o resultado for 0 ou 1 o digito é 0 caso contrário o digito é 11 menos o resultado anterior.
+	      if (resto < 2)
+	         digito1 = 0;
+	      else
+	         digito1 = 11 - resto;
+
+	      d2 += 2 * digito1;
+
+	      //Segundo resto da divisão por 11.
+	      resto = (d2 % 11);
+
+	      //Se o resultado for 0 ou 1 o digito é 0 caso contrário o digito é 11 menos o resultado anterior.
+	      if (resto < 2)
+	         digito2 = 0;
+	      else
+	         digito2 = 11 - resto;
+
+	      //Digito verificador do CPF que está sendo validado.
+	      String nDigVerific = strCpf.substring (strCpf.length()-2, strCpf.length());
+
+	      //Concatenando o primeiro resto com o segundo.
+	      nDigResult = String.valueOf(digito1) + String.valueOf(digito2);
+
+	      //comparar o digito verificador do cpf com o primeiro resto + o segundo resto.
+	      return nDigVerific.equals(nDigResult);
+	   }
 	}
 
 
